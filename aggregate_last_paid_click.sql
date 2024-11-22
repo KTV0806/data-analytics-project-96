@@ -1,16 +1,15 @@
 with tab as (
     select
-        visitor_id,-- выбираем столбец с ID для дальнейшего соединения
-        max(visit_date) as mx_visit-- определяем последний визит 
-    from sessions--за основу берем таблицу sessions
-    -- задаем условие на визит с платных сервисов (не = 'organic')
+        visitor_id,
+        max(visit_date) as mx_visit
+    from sessions
     where medium != 'organic'
-    group by 1-- группируем по первому полю
+    group by 1
 ),
 
 lst_paid_click as (
     select
-        t.visitor_id,--выбираем необходимые столбцы
+        t.visitor_id,
         s.visit_date,
         s.source as utm_source,
         s.medium as utm_medium,
@@ -20,37 +19,34 @@ lst_paid_click as (
         l.amount,
         l.closing_reason,
         l.status_id
-    from tab as t--выбираем ранее созданные СТЕ
-    inner join sessions as s-- присоединяем таблицу sessions
+    from tab as t
+    inner join sessions as s
         on
             t.visitor_id = s.visitor_id-- по столбцу visitor_id
-            -- по дате последнего платного визита из ранее созданного СТЕ
             and t.mx_visit = s.visit_date
-    left join leads as l-- присоединяем таблицу leads
+    left join leads as l
         on
-            t.visitor_id = l.visitor_id-- по столбцу visitor_id
-            and t.mx_visit <= l.created_at-- по условию, что лид после визита
-    -- задаем условие на визит с платных сервисов (не = 'organic')
+            t.visitor_id = l.visitor_id
+            and t.mx_visit <= l.created_at
     where s.medium != 'organic'
 ),
 
 tab2 as (
     select
-        date(visit_date) as visit_date,--выбираем необходимые столбцы
+        date(visit_date) as visit_date,
         utm_source,
         utm_medium,
         utm_campaign,
-        count(visitor_id) as visitors_count,-- считаем количество посетителей
-        count(lead_id) as leads_count,-- считаем количество лидов
-        -- считаем количество успешных сделок
+        count(visitor_id) as visitors_count,
+        count(lead_id) as leads_count,
         count(closing_reason) filter (where status_id = 142) as purchases_count,
-        sum(amount) as revenue -- считаем доход от успешных сделок
-    from lst_paid_click -- выбираем ранее созданный СТЕ
-    group by 1, 2, 3, 4 -- группируем по первым 4 столбцам
+        sum(amount) as revenue
+    from lst_paid_click
+    group by 1, 2, 3, 4
 ),
 
 ads as (
-    select-- выбираем необходимые столбцы
+    select
         date(campaign_date) as campaign_date,
         utm_source,
         utm_medium,
@@ -88,7 +84,7 @@ left join ads as a
         and t2.utm_campaign = a.utm_campaign
         and t2.visit_date = a.campaign_date
 order by
-    revenue desc nulls last,
+    t2.revenue desc nulls last,
     t2.visit_date asc,
     t2.visitors_count desc,
     t2.utm_source asc,
