@@ -4,7 +4,7 @@ with tab as (
     select
         visitor_id, -- выбираем столбец с ID для дальнейшего соединения
         max(visit_date) as mx_visit -- определяем последний визит 
-    from sessions as s --за основу берем таблицу sessions
+    from sessions --за основу берем таблицу sessions
     -- задаем условие на визит с платных сервисов (не = 'organic')
     where medium != 'organic'
     group by 1 -- группируем по первому полю
@@ -33,15 +33,17 @@ left join leads as l -- присоединяем таблицу leads
         and t.mx_visit <= l.created_at -- по условию, что лид после визита
 -- задаем условие на визит с платных сервисов (не = 'organic')
 where s.medium != 'organic'
-order by l.amount desc nulls last, --сортируем данные
+order by 
+    l.amount desc nulls last, --сортируем данные
     s.visit_date asc,
     s.utm_source asc,
     s.utm_medium asc,
     s.utm_campaign asc
 limit 10; -- ограничиваем выборку 10 первыми записями
 
--- Проект "Онлайн-школа" (шаг 3)
---создаем СТЕ для объединения таблиц --с затратами на рекламы по источникам vk и yandex
+--Проект "Онлайн-школа" (шаг 3)
+--создаем СТЕ для объединения таблиц 
+--с затратами на рекламы по источникам vk и yandex
 with ads as (
     select -- выбираем необходимые столбцы
         date(campaign_date) as campaign_date,
@@ -90,34 +92,36 @@ lst_click as (
     inner join sessions as s -- присоединяем таблицу sessions
         on
             t.visitor_id = s.visitor_id -- по столбцу visitor_id
-            and t.lst_visit = s.visit_date 
+            and t.lst_visit = s.visit_date
     left join leads as l -- присоединяем таблицу leads
         on
             t.visitor_id = l.visitor_id -- по столбцу visitor_id
             and t.lst_visit <= l.created_at -- по условию, что лид после визита
     where s.medium != 'organic'
-    order by l.amount desc nulls last, --сортируем данные
+    order by 
+        l.amount desc nulls last, --сортируем данные
         s.visit_date asc,
         s.utm_source asc,
         s.utm_medium asc,
         s.utm_campaign asc
 ),
 
--- создаем СТЕ для подсчета количества лидов, посетителей и успешно реализованных сделок
+--создаем СТЕ для подсчета количества лидов, 
+--посетителей и успешно реализованных сделок
 tab2 as (
     select -- выбираем необходимие столбцы
         date(lc.visit_date) as visit_date,
         lc.utm_source,
         lc.utm_medium,
         lc.utm_campaign,
-        count(distinct lc.visitor_id) as visitors_count, 
+        count(distinct lc.visitor_id) as visitors_count,
         count(lc.lead_id) as leads_count, -- считаем количество лидов
         count(lc.closing_reason) filter (
             where lc.status_id = 142
-        ) as purchases_count, -- считаем количество успешно реализованных сделок
+        ) as purchases_count,
         sum(lc.amount) as revenue -- считаем доход
     from lst_click as lc -- выбираем ранее созданный СТЕ
-    group by 1, 2, 3, 4 -- группируем итоговую таблицу по первым четырем столбцам
+    group by 1, 2, 3, 4
     order by 1 -- сортируем по дате
 )
 
@@ -139,7 +143,8 @@ left join ads as a
         and t2.utm_medium = a.utm_medium -- по типу рекламной кампании
         and t2.utm_campaign = a.utm_campaign -- по названию рекламной кампании
         and t2.visit_date = a.campaign_date -- по последнему платному визиту
-order by t2.revenue desc nulls last, t2.visit_date asc, 
-    t2.visitors_count desc, t2.utm_source asc, t2.utm_medium asc, 
+order by 
+    t2.revenue desc nulls last, t2.visit_date asc,
+    t2.visitors_count desc, t2.utm_source asc, t2.utm_medium asc,
     t2.utm_campaign asc
 limit 15; -- ограничиваем поках строк до 15
