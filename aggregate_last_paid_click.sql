@@ -22,11 +22,11 @@ lst_paid_click as (
         l.status_id
     from tab as t
     inner join sessions as s
-        on 
+        on
             t.visitor_id = s.visitor_id
             and t.mx_visit = s.visit_date
     left join leads as l
-        on 
+        on
             t.visitor_id = l.visitor_id
             and t.mx_visit <= l.created_at
     where s.medium != 'organic'
@@ -40,7 +40,8 @@ tab2 as (
         lpc.utm_campaign,
         count(lpc.visitor_id) as visitors_count,
         count(lpc.lead_id) as leads_count,
-        count(lpc.closing_reason) filter (where lpc.status_id = 142) as purchases_count,
+        count(lpc.closing_reason) 
+            filter (where lpc.status_id = 142) as purchases_count,
         sum(lpc.amount) as revenue
     from lst_paid_click as lpc
     group by 1, 2, 3, 4
@@ -78,7 +79,7 @@ select
     t2.purchases_count,
     t2.revenue
 from tab2 as t2
-left join ads as a
+left join ads as a 
     on 
         t2.utm_source = a.utm_source
         and t2.utm_medium = a.utm_medium
