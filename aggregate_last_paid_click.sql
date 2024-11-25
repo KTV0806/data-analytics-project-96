@@ -33,14 +33,15 @@ lst_paid_click as (
 ),
 
 tab2 as (
-    select date(lpc.visit_date) as visit_date,
+    select 
+        date(lpc.visit_date) as visit_date,
         lpc.utm_source,
         lpc.utm_medium,
         lpc.utm_campaign,
         count(lpc.visitor_id) as visitors_count,
         count(lpc.lead_id) as leads_count,
-        count(lpc.closing_reason) 
-            filter (where lpc.status_id = 142) as purchases_count,
+        count(lpc.closing_reason)
+        filter (where lpc.status_id = 142) as purchases_count,
         sum(lpc.amount) as revenue
     from lst_paid_click as lpc
     group by 1, 2, 3, 4
@@ -84,10 +85,11 @@ left join ads as a
         and t2.utm_medium = a.utm_medium
         and t2.utm_campaign = a.utm_campaign
         and t2.visit_date = a.campaign_date
-order by t2.revenue desc nulls last,
-    t2.visit_date,
+order by 
+        t2.revenue desc nulls last,
+    t2.visit_date asc,
     t2.visitors_count desc,
-    t2.utm_source,
-    t2.utm_medium,
-    t2.utm_campaign
+    t2.utm_source asc,
+    t2.utm_medium asc,
+    t2.utm_campaign asc
 limit 15;
