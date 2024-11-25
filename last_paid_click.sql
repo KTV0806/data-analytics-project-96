@@ -2,13 +2,11 @@
 --создаем CTE для определения последнего платного визита
 with tab as (
     select
-        s.visitor_id, -- выбираем столбец с ID для дальнейшего соединения
+        visitor_id, -- выбираем столбец с ID для дальнейшего соединения
         max(visit_date) as mx_visit -- определяем последний визит 
     from sessions as s --за основу берем таблицу sessions
-    left join leads as l -- присоединяем таблицу leads
-        on s.visitor_id = l.visitor_id --по полю visitor_id
     -- задаем условие на визит с платных сервисов (не = 'organic')
-    where s.medium != 'organic'
+    where medium != 'organic'
     group by 1 -- группируем по первому полю
 )
 
