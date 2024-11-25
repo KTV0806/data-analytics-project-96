@@ -33,8 +33,7 @@ lst_paid_click as (
 ),
 
 tab2 as (
-    select
-        date(lpc.visit_date) as visit_date,
+    select date(lpc.visit_date) as visit_date,
         lpc.utm_source,
         lpc.utm_medium,
         lpc.utm_campaign,
@@ -79,14 +78,13 @@ select
     t2.purchases_count,
     t2.revenue
 from tab2 as t2
-left join ads as a 
-    on 
+left join ads as a
+    on
         t2.utm_source = a.utm_source
         and t2.utm_medium = a.utm_medium
         and t2.utm_campaign = a.utm_campaign
         and t2.visit_date = a.campaign_date
-order by
-    t2.revenue desc nulls last,
+order by t2.revenue desc nulls last,
     t2.visit_date,
     t2.visitors_count desc,
     t2.utm_source,
