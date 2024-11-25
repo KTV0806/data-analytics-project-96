@@ -77,7 +77,7 @@ select
     t2.utm_medium,
     t2.utm_campaign,
     case
-        when sum(visitors_count) = 0 then 0
+        when sum(t2.visitors_count) = 0 then 0
         else round(sum(a.total_cost) / sum(t2.visitors_count))
     end as cpu,
     case
@@ -262,8 +262,7 @@ left join ads as a
         and t2.utm_medium = a.utm_medium
         and t2.utm_campaign = a.utm_campaign
         and t2.visit_date = a.campaign_date
-order by extract('isodow' from t2.visit_date);
-   
+order by extract('isodow' from t2.visit_date);   
 -- Считаем количество дней, за которое закрываются 90% лидов
 with tab as (
     select
@@ -273,29 +272,29 @@ with tab as (
     -- задаем условие на визит с платных сервисов (не = 'organic')
     where medium != 'organic'
     group by 1 -- группируем по первому полю
-)
-, tab2 as (
-	select
-    	--выбираем необходимые столбцы
-    	s.visit_date,
-    	l.lead_id,
-    	l.created_at,
-    	l.closing_reason, 
-    	l.status_id 
+),
+	
+tab2 as (
+    select
+        --выбираем необходимые столбцы
+        s.visit_date,
+        l.lead_id,
+        l.closing_reason,
+        l.status_id 
 	from tab as t --выбираем ранее созданные СТЕ
-	inner join sessions as s -- присоединяем таблицу sessions
-    	on
-        	t.visitor_id = s.visitor_id -- по столбцу visitor_id
-        	-- по дате последнего платного визита из ранее созданного СТЕ
-        	and t.mx_visit = s.visit_date
-	left join leads as l -- присоединяем таблицу leads
-    	on
-        	t.visitor_id = l.visitor_id -- по столбцу visitor_id
-        	and t.mx_visit <= l.created_at -- по условию, что лид после визита
-	-- задаем условие на визит с платных сервисов (не = 'organic')
-	where s.medium != 'organic' and status_id  = 142
-	group by 1, 2, 3, 4, 5
-)
+    inner join sessions as s -- присоединяем таблицу sessions
+    on
+        t.visitor_id = s.visitor_id -- по столбцу visitor_id
+            -- по дате последнего платного визита из ранее созданного СТЕ
+            and t.mx_visit = s.visit_date
+            left join leads as l -- присоединяем таблицу leads
+    on
+        t.visitor_id = l.visitor_id -- по столбцу visitor_id
+            and t.mx_visit <= l.created_at -- по условию, что лид после визита
+            -- задаем условие на визит с платных сервисов (не = 'organic')
+    where s.medium != 'organic' and l.status_id  = 142
+    group by 1, 2, 3, 4, 5
+    )
 
 select 
     percentile_disc(0.9) within group (order by date_trunc('day', created_at - visit_date))
