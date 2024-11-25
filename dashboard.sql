@@ -37,7 +37,8 @@ lst_paid_click as (
 ),
 
 tab2 as (
-    select date(visit_date) as visit_date,--выбираем необходимые столбцы
+    select 
+	date(visit_date) as visit_date,--выбираем необходимые столбцы
         utm_source,
         utm_medium,
         utm_campaign,
@@ -146,7 +147,8 @@ lst_paid_click as (
 ),
 
 tab2 as (
-    select date(visit_date) as visit_date,--выбираем необходимые столбцы
+    select 
+	date(visit_date) as visit_date,--выбираем необходимые столбцы
         utm_source,
         utm_medium,
         utm_campaign,
@@ -209,7 +211,8 @@ lst_paid_click as (
 ),
 
 tab2 as (
-    select date(visit_date) as visit_date,--выбираем необходимые столбцы
+    select 
+	date(visit_date) as visit_date,--выбираем необходимые столбцы
         utm_source,
         utm_medium,
         utm_campaign,
@@ -263,28 +266,29 @@ order by extract('isodow' from t2.visit_date);
 
 -- Считаем количество дней, за которое закрываются 90% лидов
 with tab as (
-    select visitor_id, -- выбираем столбец с ID для дальнейшего соединения
+    select 
+	visitor_id, -- выбираем столбец с ID для дальнейшего соединения
         max(visit_date) as mx_visit -- определяем последний визит
     from sessions --за основу берем таблицу sessions
     -- задаем условие на визит с платных сервисов (не = 'organic')
     where medium != 'organic'
     group by 1 -- группируем по первому полю
 ),
-	
+
 tab2 as (
     select s.visit_date,
         l.lead_id,
         l.closing_reason,
     l.status_id 
     from tab as t --выбираем ранее созданные СТЕ
-        inner join sessions as s -- присоединяем таблицу sessions
+    inner join sessions as s -- присоединяем таблицу sessions
         on
-        t.visitor_id = s.visitor_id -- по столбцу visitor_id
+            t.visitor_id = s.visitor_id -- по столбцу visitor_id
             -- по дате последнего платного визита из ранее созданного СТЕ
-        and t.mx_visit = s.visit_date
+            and t.mx_visit = s.visit_date
     left join leads as l -- присоединяем таблицу leads
-    on
-        t.visitor_id = l.visitor_id -- по столбцу visitor_id
+        on
+            t.visitor_id = l.visitor_id -- по столбцу visitor_id
             and t.mx_visit <= l.created_at -- по условию, что лид после визита
     where s.medium != 'organic' and l.status_id = 142
     group by 1, 2, 3, 4, 5
