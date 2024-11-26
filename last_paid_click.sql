@@ -33,7 +33,7 @@ left join leads as l -- присоединяем таблицу leads
         and t.mx_visit <= l.created_at -- по условию, что лид после визита
 -- задаем условие на визит с платных сервисов (не = 'organic')
 where s.medium != 'organic'
-order by 
+order by
     l.amount desc nulls last, --сортируем данные
     s.visit_date asc,
     s.utm_source asc,
@@ -98,7 +98,7 @@ lst_click as (
             t.visitor_id = l.visitor_id -- по столбцу visitor_id
             and t.lst_visit <= l.created_at -- по условию, что лид после визита
     where s.medium != 'organic'
-    order by 
+    order by
         l.amount desc nulls last, --сортируем данные
         s.visit_date asc,
         s.utm_source asc,
@@ -143,7 +143,7 @@ left join ads as a
         and t2.utm_medium = a.utm_medium -- по типу рекламной кампании
         and t2.utm_campaign = a.utm_campaign -- по названию рекламной кампании
         and t2.visit_date = a.campaign_date -- по последнему платному визиту
-order by 
+order by
     t2.revenue desc nulls last, t2.visit_date asc,
     t2.visitors_count desc, t2.utm_source asc, t2.utm_medium asc,
     t2.utm_campaign asc
