@@ -37,8 +37,8 @@ lst_paid_click as (
 ),
 
 tab2 as (
-    select 
-	date(visit_date) as visit_date,--выбираем необходимые столбцы
+    select
+        date(visit_date) as visit_date,
         utm_source,
         utm_medium,
         utm_campaign,
@@ -147,8 +147,8 @@ lst_paid_click as (
 ),
 
 tab2 as (
-    select 
-	date(visit_date) as visit_date,--выбираем необходимые столбцы
+    select
+        date(visit_date) as visit_date,--выбираем необходимые столбцы
         utm_source,
         utm_medium,
         utm_campaign,
@@ -211,8 +211,8 @@ lst_paid_click as (
 ),
 
 tab2 as (
-    select 
-	date(visit_date) as visit_date,--выбираем необходимые столбцы
+    select
+        date(visit_date) as visit_date,--выбираем необходимые столбцы
         utm_source,
         utm_medium,
         utm_campaign,
@@ -266,8 +266,8 @@ order by extract('isodow' from t2.visit_date);
 
 -- Считаем количество дней, за которое закрываются 90% лидов
 with tab as (
-    select 
-	visitor_id, -- выбираем столбец с ID для дальнейшего соединения
+    select
+        visitor_id, -- выбираем столбец с ID для дальнейшего соединения
         max(visit_date) as mx_visit -- определяем последний визит
     from sessions --за основу берем таблицу sessions
     -- задаем условие на визит с платных сервисов (не = 'organic')
@@ -276,10 +276,11 @@ with tab as (
 ),
 
 tab2 as (
-    select s.visit_date,
+    select 
+	s.visit_date,
         l.lead_id,
         l.closing_reason,
-    l.status_id 
+        l.status_id
     from tab as t --выбираем ранее созданные СТЕ
     inner join sessions as s -- присоединяем таблицу sessions
         on
@@ -292,9 +293,9 @@ tab2 as (
             and t.mx_visit <= l.created_at -- по условию, что лид после визита
     where s.medium != 'organic' and l.status_id = 142
     group by 1, 2, 3, 4, 5
-    )
+)
 
-select 
-    percentile_disc(0.9) 
-	within group (order by date_trunc('day', created_at - visit_date))
+select
+    percentile_disc(0.9)
+    within group (order by date_trunc('day', created_at - visit_date))
 from tab2;
