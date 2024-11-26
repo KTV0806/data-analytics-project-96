@@ -276,8 +276,8 @@ with tab as (
 ),
 
 tab2 as (
-    select 
-	s.visit_date,
+    select
+        s.visit_date,
         l.lead_id,
         l.closing_reason,
         l.status_id
