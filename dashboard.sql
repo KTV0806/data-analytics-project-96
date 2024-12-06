@@ -12,11 +12,12 @@ with tab as (
         l.amount,
         l.closing_reason,
         l.status_id,
-        row_number() 
-            over (partition by s.visitor_id order by s.visit_date desc) as rn
+        row_number()
+        over (partition by s.visitor_id order by s.visit_date desc) as rn
     from sessions as s
     left join leads as l
-        on s.visitor_id = l.visitor_id
+        on 
+            s.visitor_id = l.visitor_id
             and s.visit_date <= l.created_at
     where s.medium != 'organic'
 ),
@@ -94,15 +95,16 @@ select
     end as roi
 from last_paid_click as lpv
 left join ads as a
-    on lpv.utm_source = a.utm_source
-    and lpv.utm_medium = a.utm_medium
-    and lpv.utm_campaign = a.utm_campaign
-    and lpv.visit_date = a.campaign_date
+    on 
+        lpv.utm_source = a.utm_source
+        and lpv.utm_medium = a.utm_medium
+        and lpv.utm_campaign = a.utm_campaign
+        and lpv.visit_date = a.campaign_date
 where lpv.utm_source = 'vk' or lpv.utm_source = 'yandex'
 group by
     lpv.utm_source
 order by
-    round((sum(lpv.revenue) - sum(a.total_cost)) * 100.00 / sum(a.total_cost)) desc nulls last;
+    roi desc nulls last;
 
 --Считаем конверсии из клика в лид, из лида в оплату
 with tab as (
@@ -117,11 +119,12 @@ with tab as (
         l.amount,
         l.closing_reason,
         l.status_id,
-        row_number() 
-            over (partition by s.visitor_id order by s.visit_date desc) as rn
+        row_number()
+        over (partition by s.visitor_id order by s.visit_date desc) as rn
     from sessions as s
     left join leads as l
-        on s.visitor_id = l.visitor_id
+    on
+            s.visitor_id = l.visitor_id
             and s.visit_date <= l.created_at
     where s.medium != 'organic'
 ),
@@ -171,11 +174,12 @@ with tab as (
         l.amount,
         l.closing_reason,
         l.status_id,
-        row_number() 
-            over (partition by s.visitor_id order by s.visit_date desc) as rn
+        row_number()
+        over (partition by s.visitor_id order by s.visit_date desc) as rn
     from sessions as s
     left join leads as l
-        on s.visitor_id = l.visitor_id
+        on
+            s.visitor_id = l.visitor_id
             and s.visit_date <= l.created_at
     where s.medium != 'organic'
 ),
