@@ -24,7 +24,7 @@ with tab as (
 
 last_paid_click as (
     select
-        date(visit_date) visit_date,
+        date(visit_date) as visit_date,
         utm_source,
         utm_medium,
         utm_campaign,
