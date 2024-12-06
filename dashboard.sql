@@ -16,7 +16,7 @@ with tab as (
         over (partition by s.visitor_id order by s.visit_date desc) as rn
     from sessions as s
     left join leads as l
-        on 
+        on
             s.visitor_id = l.visitor_id
             and s.visit_date <= l.created_at
     where s.medium != 'organic'
@@ -95,7 +95,7 @@ select
     end as roi
 from last_paid_click as lpv
 left join ads as a
-    on 
+    on
         lpv.utm_source = a.utm_source
         and lpv.utm_medium = a.utm_medium
         and lpv.utm_campaign = a.utm_campaign
@@ -123,7 +123,7 @@ with tab as (
         over (partition by s.visitor_id order by s.visit_date desc) as rn
     from sessions as s
     left join leads as l
-    on
+        on
             s.visitor_id = l.visitor_id
             and s.visit_date <= l.created_at
     where s.medium != 'organic'
@@ -159,7 +159,7 @@ from last_paid_click
 where utm_source = 'vk' or utm_source = 'yandex'
 group by
     utm_source
-order by 3 desc;
+order by lead_pay desc;
 
 -- Считаем количество дней, за которое закрываются 90% лидов
 with tab as (
