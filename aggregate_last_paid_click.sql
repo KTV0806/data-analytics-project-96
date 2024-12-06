@@ -23,10 +23,10 @@ with tab as (
 
 last_paid_click as (
     select
+        date(visit_date) visit_date,
         utm_source,
         utm_medium,
         utm_campaign,
-        date(visit_date) as visit_date,
         cast(count(visitor_id) as numeric) as visitors_count,
         cast(count(lead_id) as numeric) as leads_count,
         count(closing_reason) filter (where status_id = 142) as purchases_count,
