@@ -27,7 +27,7 @@ last_paid_click as (
         utm_source,
         utm_medium,
         utm_campaign,
-        (visit_date::date) as visit_date,
+        date(visit_date) as visit_date,
         cast(count(visitor_id) as numeric) as visitors_count,
         cast(count(lead_id) as numeric) as leads_count,
         count(closing_reason) filter (where status_id = 142) as purchases_count,
