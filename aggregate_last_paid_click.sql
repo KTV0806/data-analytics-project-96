@@ -1,4 +1,3 @@
--- Проект "Онлайн-школа" (шаг 3)
 with tab as (
     select
         s.visitor_id,
@@ -12,7 +11,8 @@ with tab as (
         l.closing_reason,
         l.status_id,
         row_number()
-        over (partition by s.visitor_id order by s.visit_date desc) as rn
+            over (partition by s.visitor_id order by s.visit_date desc)
+        as rn
     from sessions as s
     left join leads as l
         on
@@ -23,12 +23,12 @@ with tab as (
 
 last_paid_click as (
     select
-        date(visit_date) as visit_date,
         utm_source,
         utm_medium,
         utm_campaign,
         cast(count(visitor_id) as numeric) as visitors_count,
         cast(count(lead_id) as numeric) as leads_count,
+        date(visit_date) as visit_date,
         count(closing_reason) filter (where status_id = 142) as purchases_count,
         sum(amount) as revenue
     from tab
