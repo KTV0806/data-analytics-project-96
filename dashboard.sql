@@ -27,9 +27,9 @@ last_paid_click as (
         utm_source,
         utm_medium,
         utm_campaign,
-        date(visit_date) as visit_date,
         cast(count(visitor_id) as numeric) as visitors_count,
         cast(count(lead_id) as numeric) as leads_count,
+        date(visit_date) as visit_date,
         count(closing_reason) filter (where status_id = 142) as purchases_count,
         sum(amount) as revenue
     from tab
