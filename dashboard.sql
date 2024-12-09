@@ -23,7 +23,7 @@ with tab as (
 ),
 
 last_paid_click as (
-    select        
+    select
         utm_source,
         utm_medium,
         utm_campaign,
@@ -42,7 +42,7 @@ last_paid_click as (
 ),
 
 ads as (
-    select    
+    select
         date(campaign_date) as campaign_date,
         utm_source,
         utm_medium,
