@@ -100,7 +100,7 @@ left join ads as a
         and lpv.utm_medium = a.utm_medium
         and lpv.utm_campaign = a.utm_campaign
         and lpv.visit_date = a.campaign_date
-where lpv.utm_source in 'vk' or lpv.utm_source in 'yandex'
+where lpv.utm_source = 'vk' or lpv.utm_source = 'yandex'
 group by
     lpv.utm_source
 order by
